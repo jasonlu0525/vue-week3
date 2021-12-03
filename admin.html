@@ -57,7 +57,7 @@
                                     編輯
                                 </button>
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                    @click="showModal('#delProductModal')">
+                                    @click="showModal('#delProductModal',item.id)">
                                     刪除
                                 </button>
                             </div>
@@ -83,19 +83,38 @@
                             <div class="col-sm-4">
                                 <div class="mb-1">
                                     <div class="form-group">
-                                        <label for="imageUrl">輸入圖片網址</label>
-                                        <input type="text" class="form-control" placeholder="請輸入圖片連結"
-                                            v-model="addNewData.imageUrl">
+                                        <label for="imageUrl">新增主圖網址</label>
+                                        <input type="text" class="form-control" placeholder="請輸入主圖連結"
+                                            v-model="mainProductUrl">
                                     </div>
-                                    <img class="img-fluid" src="" alt="">
+                                    <img class="img-fluid" :src="mainProductUrl" alt="">
                                 </div>
                                 <div>
-                                    <button class="btn btn-outline-primary btn-sm d-block w-100">
+                                    <button class="btn btn-outline-primary btn-sm d-block w-100" @click="addMainImg">
                                         新增圖片
                                     </button>
                                 </div>
-                                <div v-else>
-                                    <button class="btn btn-outline-danger btn-sm d-block w-100">
+                                <div class="mb-3">
+                                    <button class="btn btn-outline-danger btn-sm d-block w-100" @click="removeMainImg">
+                                        刪除圖片
+                                    </button>
+                                </div>
+
+                                <div class="mb-1">
+                                    <div class="form-group">
+                                        <label for="imageUrl">新增副圖網址</label>
+                                        <input type="text" class="form-control" placeholder="請輸入副圖連結"
+                                            v-model="subProductUrl">
+                                    </div>
+                                    <img class="img-fluid" :src="subProductUrl" alt="">
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-primary btn-sm d-block w-100" @click="addMainImg">
+                                        新增圖片
+                                    </button>
+                                </div>
+                                <div >
+                                    <button class="btn btn-outline-danger btn-sm d-block w-100" @click="removeMainImg">
                                         刪除圖片
                                     </button>
                                 </div>
@@ -189,7 +208,7 @@
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                             取消
                         </button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"  @click="deletdData" >
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"  @click="deletdData()" >
                             確認刪除
                         </button>
                     </div>
@@ -198,6 +217,26 @@
         </div>
         <!-- Modal -->
     </div>
+
+
+<!-- aleet message -->
+     <div id="success-message" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modal title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Modal body text goes here.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.9.1/axios.min.js'
         integrity='sha512-Xk3wWei2TGrsh9kDSBKUMIjw/86sLUvhtnv9f7fOuIwhhiUTKz8szkWkzHthrM5Bb3Bu9idSzkxOrkzhcneuiw=='
