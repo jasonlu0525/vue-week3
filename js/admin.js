@@ -64,14 +64,15 @@ createApp({
 
         },
         deletdData() {
-            this.showModal("#loading");
-
             this.sysTemLoader = {
                 title: "刪除結果",
                 message: "成功 !!"
 
             }
 
+            setTimeout(() => {
+                this.showModal("#loading");
+            }, 1000);
 
             this.Axios('delete', `/api/jason/admin/product/${ this.deletdDataID}`)
 
@@ -88,7 +89,7 @@ createApp({
         },
 
     },
-   
+
     created() {
         this.checkLogin();
         this.userRequest = axios.create({
