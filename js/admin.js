@@ -6,12 +6,15 @@ createApp({
     data() {
         return {
             products: [],
-            showDetailData: [],
             userRequest: "",
             mainProductUrl: '',
-            subProductUrl:'',
+            subProductUrl: '',
             addNewData: {},
-            deletdDataID: ''
+            deletdDataID: '',
+            sysTemLoader: {
+                title: "",
+                message: ""
+            }
         }
     },
     methods: {
@@ -37,19 +40,13 @@ createApp({
 
                 })
         },
-        showDetail(e) {
 
-
-            this.showDetailData = Object.assign({}, this.products[e.target.dataset.id - 1]) // 淺層拷貝
-            console.log(this.showDetailData);
-
-        },
-        isActiveChange(e) {
-            this.products[e.target.dataset.id - 1].is_enabled = !this.products[e.target.dataset.id - 1].is_enabled;
-        },
         showModal(DOM, action = '') {
             new bootstrap.Modal(document.querySelector(DOM)).show();
             action ? this.deletdDataID = action : null
+        },
+        closeModal(DOM) {
+            new bootstrap.Modal(document.querySelector(DOM)).hide();
         },
         Axios(method, url, config = "") {
             console.log(url, {
@@ -67,38 +64,31 @@ createApp({
 
         },
         deletdData() {
-            this.showSuccessMessage();
+            this.showModal("#loading");
+
+            this.sysTemLoader = {
+                title: "刪除結果",
+                message: "成功 !!"
+
+            }
+
 
             this.Axios('delete', `/api/jason/admin/product/${ this.deletdDataID}`)
+
         },
         addNewDataCanceled() {
             this.addNewData = {}
         },
-        showSuccessMessage() {
-            //    var alert = bootstrap.Alert.getInstance(document.querySelector('#success-message'))
-            var Node = document.querySelector('#success-message')
-            var alert =new bootstrap.Modal(Node)
-            console.log(alert);
-
-            // alert.close()
-
-            setTimeout(function () {
-
-            }, 1000);
-
+        addMainImg() {
+            this.addNewData.imageUrl = this.mainProductUrl;
         },
-        addMainImg(){
-            this.addNewData.imageUrl=  this.mainProductUrl;
+        removeMainImg() {
+            this.addNewData.imageUrl = '';
+            this.mainProductUrl = '';
         },
-        removeMainImg(){
-            this.addNewData.imageUrl='';
-            this.mainProductUrl='';
-        }
 
     },
-    computed: {
-
-    },
+   
     created() {
         this.checkLogin();
         this.userRequest = axios.create({
@@ -106,14 +96,6 @@ createApp({
 
         })
     },
-   mounted() {
-    var alertNode = document.querySelector('#success-message')
-    var alert = bootstrap.Alert.getInstance(alertNode)
-    console.log(alert);
-   },
-    updated() {
-        console.log(12345)
 
-    },
 
 }).mount("#app");
