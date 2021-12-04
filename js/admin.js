@@ -143,7 +143,7 @@ createApp({
 
                 console.log(this.addNewData);
 
-               this.Axios('post', `/api/jason/admin/product`, this.addNewData)
+                this.Axios('post', `/api/jason/admin/product`, this.addNewData)
 
                 // var myModal = new bootstrap.Modal(document.getElementById('productModal'), {
                 //     keyboard: false
@@ -210,9 +210,9 @@ createApp({
             this.mainProductUrl = this.addNewData.imageUrl;
 
             // 副圖
-            this.subProductUrl.tempName = this.addNewData.imagesUrl[0];
+            this.subProductUrl.tempName = [...this.addNewData.imagesUrl[0]];
 
-            this.subProductUrl.collection = this.addNewData.imagesUrl;
+            this.subProductUrl.collection = [...this.addNewData.imagesUrl];
 
 
             console.log(injectedData);
@@ -233,21 +233,21 @@ createApp({
 
                 this.addNewData.imagesUrl = this.subProductUrl.collection;
 
-                this.products.forEach((item, index,arr) => {
+                this.products.forEach((item, index, arr) => {
 
-                    if(item.id  === this.ID ){
-                        arr.splice(index,this.addNewData)
+                    if (item.id === this.ID) {
+                        arr.splice(index, this.addNewData)
 
                     }
 
                 })
 
 
-               
+
 
                 console.log(this.addNewData);
 
-                   this.Axios('put', `/api/jason/admin/product/${this.ID}`, this.addNewData)
+                this.Axios('put', `/api/jason/admin/product/${this.ID}`, this.addNewData)
 
                 // var myModal = new bootstrap.Modal(document.getElementById('productModal'), {
                 //     keyboard: false
