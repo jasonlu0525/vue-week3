@@ -14,7 +14,10 @@ createApp({
             },
             addNewData: {},
             errorMessage: {},
-            deletdDataID: '',
+
+            ID: '',
+
+
             sysTemLoader: {
                 title: "",
                 message: "",
@@ -47,9 +50,9 @@ createApp({
                 })
         },
 
-        showModal(DOM, action = '') {
+        showModal(DOM, id) {
             new bootstrap.Modal(document.querySelector(DOM)).show();
-            action ? this.deletdDataID = action : null
+            id ? this.ID = id : null
         },
         closeModal(DOM) {
             new bootstrap.Modal(document.querySelector(DOM)).hide();
@@ -75,8 +78,8 @@ createApp({
         deletdData() {
 
             this.products.forEach((element, index) => {
-                console.log(element.id === this.deletdDataID);
-                if (element.id === this.deletdDataID) {
+                console.log(element.id === this.ID);
+                if (element.id === this.ID) {
 
                     this.products.splice(index, 1)
                 }
@@ -95,22 +98,44 @@ createApp({
             }, 1000);
 
 
-            this.Axios('delete', `/api/jason/admin/product/${ this.deletdDataID}`)
+            this.Axios('delete', `/api/jason/admin/product/${ this.ID}`)
 
         },
         //建立新的產品 --> 取消
-        addNewDataCanceled() {
+        resetDataAnderrorMessage() {
             this.addNewData = {}
+            this.mainProductUrl = '';
             this.errorMessage = {}
+            this.subProductUrl = {
+                tempName: '',
+                collection: []
+            }
+        },
+        renderErrorMessage(errorMsg) {
+
+            console.log("錯誤訊息", errorMsg);
+
+            Object.keys(errorMsg).forEach((items) => {
+                this.errorMessage[items] = String(errorMsg[items])
+
+            })
+
+            console.log("處理", this.errorMessage);
+
+
         },
         //建立新的產品 --> 確認
         addNewDataConfirm() {
 
             const error = this.formVadidate();
             console.log(error);
-            this.errorMessage = error;
 
-            if (!error) { // 表單驗證沒有錯誤
+            //error is undefined => {} 
+            this.errorMessage = !error ? {} : error;
+
+
+            if (!error) {
+                // 表單驗證沒有錯誤
 
                 this.addNewData.imagesUrl = this.subProductUrl.collection;
 
@@ -118,8 +143,17 @@ createApp({
 
                 console.log(this.addNewData);
 
-                this.Axios('post', `/api/jason/admin/product`, this.addNewData)
-                this.errorMessage = undefined;
+               this.Axios('post', `/api/jason/admin/product`, this.addNewData)
+
+                // var myModal = new bootstrap.Modal(document.getElementById('productModal'), {
+                //     keyboard: false
+                // })
+                this.errorMessage = {}
+                this.addNewData = {}
+                // myModal.hide()
+            } else {
+                // 表單驗證有錯誤
+                this.renderErrorMessage(error);
             }
 
 
@@ -134,6 +168,7 @@ createApp({
             this.addNewData.imageUrl = '';
             this.mainProductUrl = '';
         },
+
         // 建立新的產品 -->新增副圖
         addSubImg() {
             if (this.subProductUrl.tempName === "") {
@@ -159,6 +194,74 @@ createApp({
             })
 
         },
+        // 點擊編輯 ==> 帶入一筆 items 資料 以及資料處理
+        injectData() {
+            console.log('aaa');
+            let injectedData = this.products.filter((element) => {
+
+                return element.id === this.ID;
+
+            });
+
+            // 文字的 data
+            this.addNewData = injectedData[0];
+
+            //主圖
+            this.mainProductUrl = this.addNewData.imageUrl;
+
+            // 副圖
+            this.subProductUrl.tempName = this.addNewData.imagesUrl[0];
+
+            this.subProductUrl.collection = this.addNewData.imagesUrl;
+
+
+            console.log(injectedData);
+
+        },
+
+        confirmEditData() {
+
+            const error = this.formVadidate();
+            console.log(error);
+
+            //error is undefined => {} 
+            this.errorMessage = !error ? {} : error;
+
+
+            if (!error) {
+                // 表單驗證沒有錯誤
+
+                this.addNewData.imagesUrl = this.subProductUrl.collection;
+
+                this.products.forEach((item, index,arr) => {
+
+                    if(item.id  === this.ID ){
+                        arr.splice(index,this.addNewData)
+
+                    }
+
+                })
+
+
+               
+
+                console.log(this.addNewData);
+
+                   this.Axios('put', `/api/jason/admin/product/${this.ID}`, this.addNewData)
+
+                // var myModal = new bootstrap.Modal(document.getElementById('productModal'), {
+                //     keyboard: false
+                // })
+                this.errorMessage = {}
+                this.addNewData = {}
+                // myModal.hide()
+            } else {
+                // 表單驗證有錯誤
+                this.renderErrorMessage(error);
+            }
+
+
+        },
         formVadidate() {
             const constraints = {
                 title: {
@@ -166,15 +269,17 @@ createApp({
                         message: "為必填"
                     },
                     length: {
-                        minimum: 4
+                        minimum: 4,
+                        tooShort: "^ 必須填寫 %{count} 個以上的文字"
                     }
                 },
                 category: {
                     presence: {
-                        message: "為必填"
+                        message: "為必填",
                     },
                     length: {
-                        minimum: 4
+                        minimum: 4,
+                        tooShort: "^ 必須填寫 %{count} 個以上的文字"
                     }
                 },
                 unit: {
@@ -190,7 +295,8 @@ createApp({
                         message: "為必填"
                     },
                     numericality: {
-                        greaterThanOrEqualTo: 0
+                        greaterThanOrEqualTo: 0,
+                        message: "^需要填入大於0的數字 "
                     }
                 },
                 price: {
@@ -198,7 +304,8 @@ createApp({
                         message: "為必填"
                     },
                     numericality: {
-                        greaterThanOrEqualTo: 0
+                        greaterThanOrEqualTo: 0,
+                        message: "^需要填入大於0的數字 "
                     }
                 }
             }
@@ -208,11 +315,50 @@ createApp({
                 category: this.addNewData.category,
                 unit: this.addNewData.unit,
                 origin_price: this.addNewData.origin_price,
-                price: this.addNewData.origin_price,
+                price: this.addNewData.price,
 
             }, constraints);
         }
 
+    },
+    watch: {
+        // 建立新的產品 --> 表單驗證 ---> 更新 this.errorMessage --> 切換確認按鈕 
+        addNewData: {
+            handler(newValue, oldValue) {
+
+                //  console.log('wateched !!!', newValue, oldValue);
+                const error = this.formVadidate() || {};
+                console.log(error);
+
+                this.errorMessage = {}
+
+
+                Object.keys(error).forEach((items) => {
+                    console.log(this.addNewData[items]);
+                    // 按下確認前，輸入 input 事件的驗證，
+                    // this.addNewData[items] !== undefined ==> input 有輸入值
+                    // this.addNewData[items] === ''
+                    //
+                    if (this.addNewData[items] !== undefined || this.addNewData[items] === '') {
+                        console.log(this.addNewData[items], 1);
+                        this.errorMessage[items] = String(error[items])
+                        console.log('  this.errorMessage', this.errorMessage);
+
+                    }
+
+
+                })
+                console.log(Object.entries(error).length === 0);
+                if (Object.entries(error).length === 0) {
+                    this.errorMessage.pass = true
+                }
+
+
+            },
+            deep: true,
+            immediate: false
+
+        }
     },
 
     created() {
