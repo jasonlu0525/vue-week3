@@ -210,7 +210,9 @@ createApp({
             this.mainProductUrl = this.addNewData.imageUrl;
 
             // 副圖
-            this.subProductUrl.tempName = [...this.addNewData.imagesUrl[0]];
+            this.subProductUrl.tempName = [...[this.addNewData.imagesUrl[0]]];
+            console.log(this.addNewData.imagesUrl[0]);
+            console.log([...this.addNewData.imagesUrl[0]]);
 
             this.subProductUrl.collection = [...this.addNewData.imagesUrl];
 
